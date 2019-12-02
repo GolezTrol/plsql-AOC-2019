@@ -9,7 +9,7 @@ create or replace package Tst_AOC_2019 is
 
   -- %endcontext
   
-  -- %context(Day 1)
+  -- %context(Day 1: The Tyranny of the Rocket Equation)
   
     -- %test (Correctly calculating the fuel needed for a given mass)
     procedure Test_D1_1_GasForMass;
@@ -18,7 +18,14 @@ create or replace package Tst_AOC_2019 is
     procedure Test_D1_2_GasForGas;
 
   -- %endcontext
- 
+  
+  -- %context(Day 2: 1202 Program Alarm)
+  
+    -- %test(Intcode processing)
+    procedure Test_D2_1_Intcode;
+    
+  -- %endcontext
+  
 end Tst_AOC_2019;
 /
 create or replace package body Tst_AOC_2019 is
@@ -61,6 +68,26 @@ create or replace package body Tst_AOC_2019 is
     ut.expect(AOC_2019.D1_2_CalcFuel(14)).to_equal(2);
     ut.expect(AOC_2019.D1_2_CalcFuel(1969)).to_equal(966);
     ut.expect(AOC_2019.D1_2_CalcFuel(100756)).to_equal(50346);
+  end;
+  
+  -- op, i1, i1, reg
+  -- op1 = add
+  -- op2 = mul
+  -- op99 = exit
+  procedure Test_D2_1_Intcode is
+  begin
+    -- '1,0,0,0,99 becomes '2,0,0,0,99' (1 + 1 = 2).
+    -- '2,3,0,3,99 becomes '2,3,0,6,99' (3 * 2 = 6).
+    -- '2,4,4,5,99,0 becomes '2,4,4,5,99,9801' (99 * 99 = 9801).
+    -- '1,1,1,4,99,5,6,0,99 becomes '30,1,1,4,2,5,6,0,99'.
+    ut.expect(AOC_2019.D2_1_IntcodeMemDump('1,0,0,0,99')).to_equal('2,0,0,0,99');
+    ut.expect(AOC_2019.D2_1_IntcodeMemDump('2,3,0,3,99')).to_equal('2,3,0,6,99');
+    ut.expect(AOC_2019.D2_1_IntcodeMemDump('2,4,4,5,99,0')).to_equal('2,4,4,5,99,9801');
+    ut.expect(AOC_2019.D2_1_IntcodeMemDump('1,1,1,4,99,5,6,0,99')).to_equal('30,1,1,4,2,5,6,0,99');
+    ut.expect(AOC_2019.D2_1_IntcodeMemDump('1,9,10,3,2,3,11,0,99,30,40,50')).to_equal('3500,9,10,70,2,3,11,0,99,30,40,50');    
+
+    ut.expect(AOC_2019.D2_1_RunIntcode('1,1,1,4,99,5,6,0,99')).to_equal(30);
+
   end;
 
 end Tst_AOC_2019;
